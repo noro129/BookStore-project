@@ -27,6 +27,6 @@ public interface BooksRepository extends JpaRepository<Books,Long> {
     @Query("SELECT b FROM Books b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%',?1,'%')) AND b.category LIKE CONCAT('%',?2,'%')")
     List<Books> searchBooksByTitleCategory(String title,String category);
 
-    @Query("SELECT b FROM Books b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%',?1,'%')) AND LOWER(b.title) LIKE LOWER(CONCAT('%',?2,'%')) AND b.category LIKE CONCAT('%',?3,'%')")
+    @Query("SELECT b FROM Books b WHERE LOWER(b.author) LIKE LOWER(CONCAT('%',?1,'%')) AND LOWER(b.title) LIKE LOWER(CONCAT('%',?2,'%')) AND b.category LIKE CONCAT('%',?3,'%')")
     List<Books> searchBooksByAuthorTitleCategory(String author, String title,String category);
 }
