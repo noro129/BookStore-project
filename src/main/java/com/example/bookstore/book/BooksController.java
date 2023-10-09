@@ -3,6 +3,7 @@ package com.example.bookstore.book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class BooksController {
     BooksController(BooksService booksService){
         this.booksService=booksService;
     }
+
     @GetMapping
     public List<Books> getBooks(@RequestParam(required = false) String category,
                                 @RequestParam(required = false) String title,
@@ -44,5 +46,18 @@ public class BooksController {
     @DeleteMapping(path = "{bookId}")
     public void deleteBook(@PathVariable("bookId") Long bookId){
         booksService.deleteBook(bookId);
+    }
+
+    @PutMapping("{bookId}")
+    public void updateBook(@PathVariable("bookId") Long bookId,
+                           @RequestParam(required = false) String title,
+                           @RequestParam(required = false) String author,
+                           @RequestParam(required = false) int numPages,
+                           @RequestParam(required = false) LocalDate publicationDate,
+                           @RequestParam(required = false) double price,
+                           @RequestParam(required = false) String description,
+                           @RequestParam(required = false) String category,
+                           @RequestParam(required = false) int quantity){
+        booksService.updateBook(bookId, title, author, numPages, publicationDate, price, description, category, quantity);
     }
 }

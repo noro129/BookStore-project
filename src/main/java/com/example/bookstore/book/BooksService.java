@@ -2,8 +2,11 @@ package com.example.bookstore.book;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -62,5 +65,35 @@ public class BooksService {
 
     public List<Books> getBooksByAuthorOrTitle(String query) {
         return booksRepository.searchBooksByAuthorOrTitle(query);
+    }
+
+    @Transactional
+    public void updateBook(Long bookId, String title, String author, int numPages, LocalDate publicationDate,
+                           double price, String description, String category, int quantity) {
+        Books bookById = booksRepository.findById(bookId).orElseThrow(() -> new IllegalStateException("book with id "+bookId+" does not exist."));
+        if(title!=null && !title.isEmpty() && !Objects.equals(title,bookById.getTitle())){
+            bookById.setTitle(title);
+        }
+        if(author!=null && !author.isEmpty() && !Objects.equals(author,bookById.getAuthor())){
+            bookById.setAuthor(author);
+        }
+        if(numPages!=0 && numPages!=bookById.getNumPages()){
+            bookById.setNumPages(numPages);
+        }
+        if(publicationDate!=null && Objects.equals(publicationDate,bookById.getPublicationDate())){
+            bookById.setPublicationDate(publicationDate);
+        }
+        if(price!=bookById.getPrice()){
+            bookById.setPrice(price);
+        }
+        if(description!=null && !description.isEmpty() && !Objects.equals(description,bookById.getDescription())){
+            bookById.setDescription(description);
+        }
+        if(category!=null && !category.isEmpty() && !Objects.equals(category,bookById.getCategory())){
+            bookById.setCategory(category);
+        }
+        if(quantity!=0 && quantity!=bookById.getQuantity()){
+            bookById.setQuantity(quantity);
+        }
     }
 }
