@@ -1,9 +1,11 @@
 package com.example.bookstore.user;
 
+import org.aspectj.weaver.loadtime.Options;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,5 +63,22 @@ public class UsersService {
             }
             user.setEmail(email);
         }
+    }
+
+    public List<Users> getUserById(Long userId) {
+        Optional<Users> userById = usersRepository.findById(userId);
+        if(userById.isPresent()){ return userById.map(Collections::singletonList).orElse(Collections.emptyList()); }
+        else { throw new IllegalStateException("user with id "+userId+" does not exist"); }
+    }
+
+    public List<Users> getUserByUsername(String username) {
+        Optional<Users> userByUsername = usersRepository.findUserByUsername(username);
+        if(userByUsername.isPresent()){ return userByUsername.map(Collections::singletonList).orElse(Collections.emptyList()); }
+        else { throw new IllegalStateException("user with username "+username+" does not exist"); }
+    }
+
+    public List<Users> searchUsersByUsername(String username) {
+        if(username.isEmpty()) return Collections.emptyList();
+        return usersRepository.searchUsersByUsername(username);
     }
 }
