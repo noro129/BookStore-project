@@ -1,6 +1,7 @@
 package com.example.bookstore.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +37,9 @@ public class UsersService {
     }
 
     public void deleteUser(Long userId) {
-        boolean userExists = usersRepository.existsById(userId);
-        if(userExists){
-            usersRepository.deleteById(userId);
-        } else {
-            throw new IllegalStateException("user with id "+userId+" does not exist");
-        }
+        Users user = usersRepository.findById(userId).orElseThrow(()->
+                new UsernameNotFoundException("user with id "+userId+" not found"));
+        usersRepository.delete(user);
     }
 
     @Transactional

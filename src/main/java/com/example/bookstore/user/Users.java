@@ -1,10 +1,18 @@
 package com.example.bookstore.user;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
+
+@Builder
 @Entity
 @Table
-public class Users {
+public class Users implements UserDetails {
     @Id
     @SequenceGenerator(
             name = "user_sequence",
@@ -25,7 +33,9 @@ public class Users {
     private String addressCountry;
     private String addressZipCode;
     private String phoneNumber;
-    private String userRole;
+    @Enumerated(EnumType.STRING)
+    private Role userRole;
+    private boolean activated;
 
     public Users() {
     }
@@ -40,7 +50,8 @@ public class Users {
                  String addressCountry,
                  String addressZipCode,
                  String phoneNumber,
-                 String userRole) {
+                 Role userRole,
+                 boolean activated) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -52,6 +63,7 @@ public class Users {
         this.addressZipCode = addressZipCode;
         this.phoneNumber = phoneNumber;
         this.userRole = userRole;
+        this.activated=activated;
     }
 
     public Users(String username,
@@ -63,7 +75,8 @@ public class Users {
                  String addressCountry,
                  String addressZipCode,
                  String phoneNumber,
-                 String userRole) {
+                 Role userRole,
+                 boolean activated) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -74,6 +87,7 @@ public class Users {
         this.addressZipCode = addressZipCode;
         this.phoneNumber = phoneNumber;
         this.userRole = userRole;
+        this.activated=activated;
     }
 
     public long getId() {
@@ -84,14 +98,41 @@ public class Users {
         this.id = id;
     }
 
+    @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(userRole.name()));
+    }
+
+    @Override
     public String getPassword() {
         return password;
     }
@@ -156,11 +197,11 @@ public class Users {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getUserRole() {
+    public Role getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(String userRole) {
+    public void setUserRole(Role userRole) {
         this.userRole = userRole;
     }
 
