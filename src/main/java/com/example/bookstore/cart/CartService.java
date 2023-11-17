@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +38,20 @@ public class CartService {
         cartRepository.save(new Cart(user,empty));
     }
 
+    public boolean containsBook(long userId, long bookId){
+        Cart cart = cartRepository.findCartByUser(usersRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("no user with id "+userId+" was found")
+        )).orElseThrow(
+                () -> new IllegalStateException("no cart was found for user with id "+userId)
+        );
+        for(CartItem item : cart.getItems()){
+            if(item.getBook().getId()==bookId){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addBookToCart(AddToCartRequest request) {
         Optional<Cart> cartByUser = cartRepository.findCartByUser(usersRepository.findById(request.getUserId()).orElseThrow(
                 () -> new UsernameNotFoundException("user with id "+request.getUserId()+" not found")
@@ -47,6 +59,9 @@ public class CartService {
         Cart cart;
         if(cartByUser.isEmpty()){
             this.createCart(request.getUserId());
+        }
+        if(containsBook(request.getUserId(), request.getBookId())){
+            throw new IllegalStateException("book with id "+request.getBookId()+" already added to cart");
         }
         cart = getCart(request.getUserId()).get(0);
         cart.getItems().add(new CartItem(
@@ -58,4 +73,44 @@ public class CartService {
         ));
         cartRepository.save(cart);
     }
+
+    public Map<String,Double> getUserCartTotal(long userId) {
+        Cart cartByUser = cartRepository.findCartByUser(usersRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("user with id "+userId+" not found")
+        )).orElseThrow(
+                () -> new IllegalStateException("no cart found for user with id "+userId)
+        );
+        double price = 0;
+        for(CartItem cartItem : cartByUser.getItems()){
+            price+=cartItem.getBook().getPrice()*cartItem.getQuantity();
+        }
+        Map<String, Double> object = new HashMap<>();
+        object.put("total price", price);
+        return object;
+    }
+
+    public void deleteCart(long userId) {
+        cartRepository.deleteById(cartRepository.findCartByUser(usersRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("no user with id "+userId+" exists")
+        )).orElseThrow(
+                () -> new IllegalStateException("no cart found for user with id "+userId)
+        ).getId());
+    }
+
+//    public void removeBookFromCart(long userId, long bookId) {
+//        Cart cart = cartRepository.findCartByUser(usersRepository.findById(userId).orElseThrow(
+//                () -> new UsernameNotFoundException("no user with id "+userId+" was found")
+//        )).orElseThrow(
+//                () -> new IllegalStateException("no cart was found for user with id "+userId)
+//        );
+//        if(!containsBook(userId, bookId))
+//            throw new IllegalStateException("book with id " + bookId + " is not in the cart");
+//        for(CartItem item : cart.getItems()){
+//            if(item.getBook().getId()==bookId){
+//                cart.getItems().remove(item);
+//                cartRepository.save(cart);
+//                return;
+//            }
+//        }
+//    }
 }
