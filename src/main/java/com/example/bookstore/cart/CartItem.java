@@ -1,6 +1,7 @@
 package com.example.bookstore.cart;
 
 import com.example.bookstore.book.Books;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class CartItem {
     private int quantity;
 
     @ManyToOne
+    @JsonIgnore
     private Cart cart;
 
     public CartItem(Books book, int quantity, Cart cart) {

@@ -1,6 +1,7 @@
 package com.example.bookstore.cart;
 
 import com.example.bookstore.user.Users;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class Cart {
     private long id;
     @OneToOne
     private Users user;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CartItem> items;
 
     public Cart(Users user, List<CartItem> items) {
