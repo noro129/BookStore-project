@@ -54,8 +54,8 @@ public class CartController {
         cartService.deleteCart(userId);
     }
 
-//    @DeleteMapping(path = "/removeBook")
-//    public void removeBookFromCart(@RequestParam long userId, @RequestParam long bookId){
-//        cartService.removeBookFromCart(userId, bookId);
-//    }
+    @DeleteMapping(path = "/removeBook")
+    public void removeBookFromCart(@RequestParam long userId, @RequestParam long bookId){
+        cartService.removeBookFromCart(userId, bookId);
+    }
 }

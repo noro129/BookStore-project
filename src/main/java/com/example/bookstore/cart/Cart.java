@@ -28,7 +28,10 @@ public class Cart {
     private long id;
     @OneToOne
     private Users user;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     private List<CartItem> items;
 
     public Cart(Users user, List<CartItem> items) {
